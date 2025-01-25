@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.CartMapper">
+    <select id="searchItem" parameterType = "map" resultType="com.example.demo.model.Cart">
+        SELECT * FROM cart_list WHERE item_id = #{id} AND member_no = #{memberNo}
+    </select>
+
+    <select id="searchCart" parameterType="long" resultType="com.example.demo.model.Cart">
+        SELECT * FROM cart_list WHERE id = #{id}
+    </select>
+
+    <select id="selectCartList" resultMap="cartResultMap">
+        SELECT
+        c.id AS cart_id,
+        c.item_id AS cart_item_id,
+        c.member_no AS cart_member_no,
+        c.quantity AS cart_quantity,
+        c.created_at AS cart_created_at,
+        i.id AS item_id,
+        i.name AS item_name,
+        i.price AS item_price
+        FROM cart_list c
+        JOIN item i ON c.item_id = i.id
+        WHERE c.member_no = #{memberNo}
+    </select>
+
+    <resultMap id="cartResultMap" type="com.example.demo.model.Cart">
+        <result property="id" column="cart_id" />
+        <result property="item_id" column="cart_item_id" />
+        <result property="member_no" column="cart_member_no" />
+        <result property="quantity" column="cart_quantity" />
+        <result property="created_at" column="cart_created_at" />
+        <association property="item" javaType="com.example.demo.model.Item">
+            <result property="id" column="item_id" />
+            <result property="name" column="item_name" />
+            <result property="price" column="item_price" />
+        </association>
+    </resultMap>
+
+    <insert id="insertCart" parameterType="com.example.demo.model.Cart">
+        INSERT INTO cart_list (item_id, member_no, quantity, created_at)
+        VALUES (#{item_id}, #{member_no}, #{quantity}, #{created_at})
+    </insert>
+
+    <update id="updateCart" parameterType="com.example.demo.model.Cart">
+        UPDATE cart_list
+        SET quantity = #{quantity}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteCart" parameterType="long">
+        DELETE cart_list WHERE id = #{id}
+    </delete>
+
+</mapper>

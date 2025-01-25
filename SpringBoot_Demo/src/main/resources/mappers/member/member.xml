@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.MemberMapper">
+    
+    <select id="checkMemberIdPw" parameterType="string" resultType="string">
+        SELECT password FROM member WHERE id = #{id}
+    </select>
+
+    <select id="getUserInfo" parameterType="string" resultMap="userInfoResultMap">
+        SELECT member_no, grade_cd, id FROM member WHERE id = #{id}
+    </select>
+
+    <resultMap id="userInfoResultMap" type="com.example.demo.model.UserInfo">
+        <result property="memberNo" column="member_no"/>
+        <result property="gradeCd" column="grade_cd"/>
+        <result property="memberId" column="id"/>
+    </resultMap>
+
+
+</mapper>

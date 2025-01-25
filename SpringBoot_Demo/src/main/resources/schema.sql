@@ -1,0 +1,25 @@
+-- 상품 테이블 생성
+CREATE TABLE IF NOT EXISTS item (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL
+);
+
+-- 장바구니 테이블
+CREATE TABLE cart_list (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    item_id BIGINT NOT NULL,
+    member_no BIGINT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 회원 테이블
+CREATE TABLE member (
+    member_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    grade_cd BIGINT,
+    grade_nm VARCHAR(255),
+    id VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

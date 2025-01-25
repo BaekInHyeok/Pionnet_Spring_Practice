@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>장바구니</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+
+    /* 열 비율 설정 */
+    th.image-column, td.image-column { width: 15%; } /* 상품 이미지 열 비율 */
+    th.name-column, td.name-column { width: 35%; }
+    th.price-column, td.price-column { width: 20%; }
+    th.quantity-column, td.quantity-column { width: 15%; }
+    th.action-column, td.action-column { width: 15%; }
+
+    .button { padding: 5px 10px; margin: 2px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    .delete-button { background-color: #f44336; }
+    .item-image {
+      width: 100px; /* 이미지 크기 조정 */
+      height: 100px;
+      object-fit: cover;
+    }
+    .price { font-weight: bold; color: #333; }
+  </style>
+  <script>
+    function loadRandomImages() {
+        const images = document.querySelectorAll('.item-image');
+        images.forEach(img => {
+            const randomId = Math.floor(Math.random() * 1000);
+            img.src = `https://picsum.photos/seed/${randomId}/150/150`;
+        });
+    }
+  </script>
+</head>
+<body onload="loadRandomImages()">
+<h1>장바구니</h1>
+<table>
+  <thead>
+  <tr>
+    <th class="image-column">상품 이미지</th>
+    <th class="name-column">상품명</th>
+    <th class="price-column">가격</th>
+    <th class="quantity-column">수량</th>
+    <th class="action-column">작업</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="item : ${cartItems}">
+    <td class="image-column">
+      <img class="item-image" alt="상품 이미지">
+    </td>
+    <td class="name-column" th:text="${item.item.name}"></td>
+    <td class="price-column price" th:text="${#numbers.formatCurrency(item.item.price)}"></td>
+    <td class="quantity-column">
+      <!-- 수량 입력 필드 추가 -->
+      <form th:action="@{/cart/updateQuantity/{cartId}(cartId=${item.id})}" method="post" style="display: inline;">
+        <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width: 60px; padding: 5px;">
+        <button type="submit" class="button">수량 변경</button>
+      </form>
+      <p>재고 : [[${item.item.stock}]]</p>
+    </td>
+    <td class="action-column">
+      <!-- 장바구니에서 상품 삭제 버튼 -->
+      <form th:action="@{/cart/remove/{cartId}(cartId=${item.id})}" method="post" style="display: inline;">
+        <button type="submit" class="button delete-button">삭제</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<div th:if="${#lists.isEmpty(cartItems)}" style="margin-top: 20px;">
+  <p>장바구니가 비어있습니다.</p>
+</div>
+<div style="margin-top: 20px;">
+  <a href="/" class="button" style="text-decoration: none;">상품 목록으로 돌아가기</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>상품 목록</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+
+        /* 열 비율 설정 */
+        th.image-column, td.image-column { width: 15%; } /* 이미지 열 너비 줄이기 */
+        th.name-column, td.name-column { width: 35%; }
+        th.price-column, td.price-column { width: 20%; }
+        th.action-column, td.action-column { width: 30%; }
+
+        .button { padding: 5px 10px; margin: 2px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .add-button { background-color: #2196F3; } /* 상품 추가 버튼 스타일 */
+        .login-button { background-color: #FFC107; } /* 로그인 버튼 스타일 */
+        .logout-button { background-color: #FF5722; } /* 로그아웃 버튼 스타일 */
+
+        .item-image {
+            width: 100px; /* 이미지를 작게 조정 */
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .price { font-weight: bold; color: #333; }
+        .button-container {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center; /* 버튼들을 동일한 높이에 배치 */
+        }
+        /* 왼쪽 정렬 */
+        .left-buttons {
+            display: flex;
+            gap: 10px;
+            margin-right: auto; /* 왼쪽 정렬 */
+        }
+
+        /* 오른쪽 정렬 */
+        .right-button {
+            margin-left: auto; /* 오른쪽 정렬 */
+        }
+
+        /* 오른쪽 상단 정렬 */
+        .top-right {
+            display: flex;
+            align-items: center; /* 회원 ID와 버튼을 동일한 높이에 배치 */
+            margin-bottom: 20px;
+        }
+
+        .member-info {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 20px; /* 오른쪽 버튼과의 간격을 맞추기 위해 추가 */
+        }
+    </style>
+    <script>
+        function loadRandomImages() {
+            const images = document.querySelectorAll('.item-image');
+            images.forEach(img => {
+                const randomId = Math.floor(Math.random() * 1000);
+                img.src = `https://picsum.photos/seed/${randomId}/150/150`;
+            });
+        }
+
+        // alertMessage가 있을 경우 알림 표시
+        window.onload = function () {
+            const alertMessage = /*[[${alertMessage}]]*/ '';
+            if (alertMessage) {
+                alert(alertMessage);
+            }
+        };
+    </script>
+
+</head>
+<body onload="loadRandomImages()">
+<h1>상품 목록</h1>
+<!-- 회원 ID와 로그인/로그아웃 버튼을 오른쪽 상단에 배치 -->
+<div class="top-right">
+    <div th:if="${userInfo != null}" class="member-info">
+        <span>회원 ID: <span th:text="${userInfo.memberId}"></span></span>
+    </div>
+
+    <div class="right-button">
+        <!-- 로그인 또는 로그아웃 버튼 표시 -->
+        <a th:if="${userInfo == null}" href="/login" class="button login-button" style="text-decoration: none;">로그인</a>
+        <form th:if="${userInfo != null}" action="/login/logout" method="post" style="display: inline;">
+            <button type="submit" class="button logout-button">로그아웃</button>
+        </form>
+    </div>
+</div>
+
+<div class="button-container">
+    <div class="left-buttons">
+        <a th:if="${userInfo != null and userInfo.gradeCd == 99}" href="/item/new" class="button add-button" style="text-decoration: none;">상품 추가</a>
+        <a href="/cart" class="button" style="text-decoration: none;">장바구니 보기</a>
+    </div>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th class="image-column">상품 이미지</th>
+        <th class="name-column">상품명</th>
+        <th class="price-column">가격</th>
+        <th class="action-column">작업</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td class="image-column">
+            <img class="item-image" alt="상품 이미지">
+        </td>
+        <td class="name-column" th:text="${item.name}"></td>
+        <td class="price-column price" th:text="${#numbers.formatCurrency(item.price)}"></td>
+        <td class="action-column">
+            <form th:action="@{/cart/add/{id}(id=${item.id})}" method="post" style="display: inline;">
+                <button type="submit" class="button">장바구니 담기</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
